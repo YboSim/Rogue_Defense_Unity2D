@@ -7,7 +7,8 @@
 </div>
 
 ## 목차
-  - [개요](#개요) 
+  - [개요](#개요)
+  - [빌드 파일 및 유니티 파일](#빌드-파일-및-유니티-파일)
   - [게임 설명](#게임-설명3456)
   - [주요 활용 기술](#주요-활용-기술)
 
@@ -18,6 +19,12 @@
 - 개발 목적 : 어렸을 적 즐겨했던 타워 디펜스류 게임 기능 직접 구현
 - 개발 엔진 및 언어 : Unity(2020.3.41f1) & C#
 
+## 빌드 파일 및 유니티 파일
+- 구글 드라이브 다운로드 링크(빌드)
+- 구글 드라이브 다운로드 링크(유니티)
+- 네이버 MyBox 다운로드 링크(빌드)
+- 네이버 MyBox 다운로드 링크(유니티)
+- 
 ## 게임 설명3456
 
 - **3**가지 난이도!<br>
@@ -340,3 +347,295 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
 ```
 
 </details>
+
+---
+
+* #07)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Manager/TowerInstallMgr.cs)) ScreenToWorldPoint함수를 이용한 타워 설치 가능Position 체크 및 타워 설치(드래그 앤 드랍)
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+    bool IsInstallSlot(InstallSlotScript a_InstSlot)
+    {  //마우스가 SpriteRenderer 슬롯 위에 있는지? 판단하는 함수
+        if (a_InstSlot == null)
+            return false;
+
+        Vector3[] v = new Vector3[2];
+        float a_Width = a_InstSlot.GetComponent<SpriteRenderer>().size.x;
+        float a_Height = a_InstSlot.GetComponent<SpriteRenderer>().size.y;
+        v[0] = new Vector3(a_InstSlot.transform.position.x - a_Width,
+                           a_InstSlot.transform.position.y - a_Height, 0.0f); // 좌측하단
+        v[1] = new Vector3(a_InstSlot.transform.position.x + a_Width,
+                           a_InstSlot.transform.position.y + a_Height, 0.0f); // 우측상단
+
+        Vector3 a_MsPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,
+                                                             Input.mousePosition.y,
+                                                             0.0f)); //현재마우스 위치의 월드포인트 값
+
+        if (v[0].x < a_MsPos.x && a_MsPos.x <= v[1].x &&
+            v[0].y <= a_MsPos.y && a_MsPos.y <= v[1].y) //타워 설치 가능 구역
+        {
+            if (a_InstSlot.m_IsInstalled == false) //해당 슬롯에 이미 타워가 설치되어 있지 않으면
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+```
+
+</details>
+
+---
+* #08)([Script](https://github.com/dkckacka1/DotHeros-2DPortfolio-/blob/main/Portfolio_2D/Assets/02.%20Script/Battle/Unit/SkillSystem/BattleTargetSetExtensions.cs)) Bzier Path Creator 에셋을 이용한 Rogue경로 설정 및 이
+
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+       if (pathCreator != null)
+        {
+            distanceTravelled += speed * Time.deltaTime;
+            transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
+            //transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
+        }
+```
+
+</details>
+
+---
+
+* #09)Video Player 컴포넌트를 이용한 TitleScene 배경 비디오 재생
+
+<details>
+<summary>이미지</summary>
+  
+
+
+</details>
+
+---
+* #10)([스크립트](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Tower/Tower_Ice.cs)) Particle System 컴포넌트를 이용한 IceTower 발동 효과 구현
+
+<details>
+<summary>소스 코드 및 이미지</summary>
+  
+```csharp
+    void TowerWorking()
+    {
+        if (Game_Mgr.m_GameState == GameState.GameOver || Game_Mgr.m_GameState == GameState.Victory)
+            return;
+
+        //아이스타워 이펙트 
+        if (m_CacTime< 1.0f)
+        {
+            m_Timer += Time.deltaTime;
+            m_CacTime = m_Timer / m_AniDuring;
+            m_Color = m_IceEffect.color;
+            m_Color.a = Mathf.Lerp(0, 1, m_CacTime);
+            m_IceEffect.color = m_Color;
+
+            if(m_CacTime > 1.0f)
+            {
+                m_IceParticle.Play(); //파티클시스템 플레이
+
+                Sound_Mgr.Instance.PlayEffSound("magic_02", 1.0f);
+
+                Freezing();
+
+                m_Color.a = 0.0f;
+                m_IceEffect.color = m_Color;
+                m_Timer = 0.0f;
+                m_CacTime = 0.0f;
+
+                m_IsWork = false;
+            }
+        }
+        //아이스타워 이펙트 
+    }
+```
+
+</details>
+
+---
+* #11)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Tower/Tower_Poison.cs)) Physics2D.OverlapCircleAll 함수를 이용한 PoisonTower,IceTower 주변 Rogue오브젝트 디버프 상태 설정
+
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+    void Poisoning()
+    {
+        if (Game_Mgr.m_GameState == GameState.GameOver || Game_Mgr.m_GameState == GameState.Victory)
+            return;
+
+        Collider2D[] colls = Physics2D.OverlapCircleAll(transform.position, m_RangeRadius);
+        Monster a_Monster;
+        foreach (Collider2D coll in colls)
+        {
+            a_Monster = coll.GetComponent<Monster>();
+            if (a_Monster == null)
+                continue;
+
+            a_Monster.Poisoned(m_PosionDamage);
+        }
+
+    }
+```
+
+</details>
+
+---
+* #12)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Tower/TowerRange_Arrow.cs)) Collider2D,RigidBody2D 컴포넌트와 OnTriggerEnter2D,OnTriggerExit2D 이벤트 함수를 이용한 타워범위 내 몬스터리스트 갱신 
+
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+    void OnTriggerEnter2D(Collider2D coll)
+    {
+        if (coll.gameObject.name.Contains("Rogue") == true)
+        {
+            MonsterInRange(coll.GetComponent<Monster>());
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D coll)
+    {
+        if(coll.gameObject.name.Contains("Rogue") == true)
+        {
+            MonsterOutRange(coll.GetComponent<Monster>());
+        }
+    }
+```
+
+</details>
+
+---
+* #13)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Manager/RogueGenerator.cs)) 오브젝트 풀링을 이용한 Rogue 오브젝트 스폰
+
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+    void CreateRoguePool(int a_RogueIdx)
+    {
+        for (int ii = 0; ii < m_MaxPoolSize[a_RogueIdx]; ii++)
+        {
+            GameObject a_Rogue = Instantiate(m_RoguePrefab[a_RogueIdx]) as GameObject;
+
+            //위치 지정
+            a_Rogue.transform.position = m_StartPoint.position;
+            a_Rogue.transform.SetParent(m_RoguePool);
+            //위치 지정
+
+            //사이즈 조정
+            if (Chapter_Mgr.m_MapIdx == 1 || Chapter_Mgr.m_MapIdx == 2) //Burial, Arcitc Map
+            {
+                a_Rogue.transform.localScale =
+                    new Vector3(0.3f, 0.3f, 1.0f);
+                a_Rogue.GetComponentInChildren<RectTransform>().localScale =
+                    new Vector3(1.0f, 1.0f, 1.0f);
+            }
+            else // Forest, Desert Map
+            {
+                a_Rogue.transform.localScale =
+                    new Vector3(-0.3f, 0.3f, 1.0f);
+                a_Rogue.GetComponentInChildren<RectTransform>().localScale =
+                    new Vector3(-1.0f, 1.0f, 1.0f); //캔버스 반전
+            }
+            //사이즈 조정
+
+            a_Rogue.gameObject.SetActive(false);
+        }
+    }
+
+    void TakeRogueFromPool(int a_RogueIdx)
+    {
+        //게임오버상태일 경우 로그생산 리턴
+        if (Game_Mgr.m_GameState == GameState.GameOver || Game_Mgr.m_GameState == GameState.Victory)
+            return;
+
+        int a_RandomIdx = Random.Range(0, 2); //path 지정용 랜덤 변수
+
+        Monster[] a_Rogues = m_RoguePool.transform.GetComponentsInChildren<Monster>(true);
+
+        foreach (Monster a_Rogue in a_Rogues)
+        {
+            if (a_Rogue.gameObject.activeSelf == false)
+            {
+                if (a_Rogue.gameObject.name.Contains("_0" + (a_RogueIdx + 1).ToString()) == true)
+                {
+                    a_Rogue.GetComponent<Monster>().HpSetting(); //게임 플레이 타임에 따른 로그들 Hp설정
+
+                    a_Rogue.transform.position = m_StartPoint.position; //로그생성후 맵중앙에 잠깐의 프레임동안 깜빡거림을 방지하기위해 카메라 범위 밖에서 생성
+                    a_Rogue.gameObject.SetActive(true);
+
+                    //경로지정
+                    PathFollower a_Path = a_Rogue.gameObject.AddComponent<PathFollower>();
+                    if (a_Path != null)
+                    {
+                        a_Path.pathCreator = m_Path[a_RandomIdx];
+                    }
+                    //경로지정
+
+                    return;
+                }
+            }
+        }
+    }
+```
+
+</details>
+
+---
+* #14)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Monster/Monster.cs)) Animator컴포넌트를 이용한 AnimatorUpdate함수 구현
+
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+    void AnimationUpdate()
+    {
+        if (m_IsDie == true)
+        {
+            m_Animator.SetBool("IsDie", true); //사망 애니메이션 재생
+
+            //몬스터 이미지 흐려지게 만들기
+            SpriteRenderer[] a_SR = transform.GetComponentsInChildren<SpriteRenderer>();
+            for (int ii = 0; ii<a_SR.Length; ii++)
+            {
+                if (a_SR[ii].color.a > 0.0f)
+                    a_SR[ii].color -= new Color(0.0f, 0.0f, 0.0f, 0.005f);
+            }
+            //몬스터 이미지 흐려지게 만들기
+        }
+        else
+        {
+            m_Animator.SetBool("IsDie", false); //walking 애니메이션 재생
+        }
+    }
+```
+
+</details>
+
+---
+* #15)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Tower/Tower_Arrow.cs)) 각 타워 별 공속,공격력,범위 업그레이드 및 판매 기능 구현 
+
+<details>
+<summary>이미지</summary>
+
+</details>
+
+---
+
+* #16)([Script](https://github.com/dkckacka1/DotHeros-2DPortfolio-/blob/main/Portfolio_2D/Assets/02.%20Script/Battle/Unit/SkillSystem/BattleTargetSetExtensions.cs)) SortingGroup 컴포넌트와 Y Sorting기능 활용한 원근감 표현
+
+<details>
+<summary>이미지</summary>
+  
+
+</details>
+
+---
