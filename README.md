@@ -42,3 +42,301 @@ Easy와 Hard모드를 모두 클리어한 후 Hell모드에서 무한하게 쏟�
 |기본 Rogue|이동속도가 빠른 Rogue|최대체력이 높은 Rogue|디버프 효과를 받지 않는 Rogue|2분 주기로 스폰되는 중간 보스 Rogue|파이널 보스 Rogue|
 
 ## 주요 활용 기술
+---
+* #01)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Manager/Fade_Mgr.cs)) Scene이동 시 Panel 오브젝트의 알파값을 조절하여 Fade In,Out 효과를 주는 함수 구현
+
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+    void FadeUpdate()
+    {
+        if (m_StartFade == false)
+            return;
+
+        if (m_CacTime < 1.0f)
+        {
+            m_AddTimer += Time.deltaTime;
+            m_CacTime = m_AddTimer / AniDuring;
+            m_Color = m_FadeImg.color;
+            m_Color.a = Mathf.Lerp(m_StVal, m_EndVal, m_CacTime);
+            m_FadeImg.color = m_Color;
+
+            if (1.0f <= m_CacTime)
+            {
+                if (m_StVal == 1.0f && m_EndVal == 0.0f) //들어올 때 
+                {
+                    m_Color.a = 0.0f;
+                    m_FadeImg.color = m_Color;
+                    m_FadeImg.gameObject.SetActive(false);
+                    m_StartFade = false;
+                }
+                else if (m_StVal == 0.0f && m_EndVal == 1.0f)  //나갈 때 
+                {
+                    SceneManager.LoadScene(m_SceneName);
+                }
+
+            }//if(1.0f < m_CacTime)
+        }//if(m_CacTime < 1.0f)
+    }//void FadeUpdate()
+```
+
+</details>
+
+---
+* #02)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Box/LogInBox.cs)) Playfab을 이용한 계정 생성 및 로그인,아웃 구현
+
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+        //--- 로그인 성공시 어떤 유저 정보를 가져올지를 설정하는 옵션 객체 생성
+        var option = new GetPlayerCombinedInfoRequestParams()
+        {
+            //--- DisplayName(닉네임)을 가져오기 위한 옵션
+            GetPlayerProfile = true,
+            ProfileConstraints = new PlayerProfileViewConstraints()
+            {
+                ShowDisplayName = true,  //DisplayName(닉네임) 가져오기 위한 요청 옵션
+                //ShowAvatarUrl = true     //AvatarUrl 을 가져오는 옵션
+            },
+            //--- DisplayName(닉네임)을 가져오기 위한 옵션
+
+            //--- BestScore 통계값(순위표에 관여하는)을 불러올 수 있는 옵션
+            GetPlayerStatistics = true,
+
+            //--- < 플레이어 데이터(타이틀) > 값을 불러올 수 있게 하는 옵션
+            GetUserData = true
+        };
+
+        var request = new LoginWithEmailAddressRequest
+        {
+            Email = a_IdStr,
+            Password = a_PwStr,
+            InfoRequestParameters = option
+        };
+
+        PlayFabClientAPI.LoginWithEmailAddress(request,
+                                        OnLoginSuccess, OnLoginFailure);
+```
+
+</details>
+
+---
+* #03)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Box/ModeBox.cs)) Plyfab의 LeaderBoards를 이용한 최고점수 받아오기
+
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+    void LoadBestScore(int a_MapIdx)
+    {
+        if (GlobalValue.g_Unique_ID == "") //로그인 상태에서만...
+            return;
+
+        var request = new GetLeaderboardRequest
+        {
+            StartPosition = 0,      //0번인덱스 즉 1등부터
+            StatisticName = "BestScore_" + a_MapIdx.ToString(), //관리자페이지의 순위표 변수 중 "BestScore_n" 기준
+            MaxResultsCount = 15,   //15명까지
+            ProfileConstraints = new PlayerProfileViewConstraints()
+            {
+                ShowDisplayName = true, //닉네임도 요청
+            }
+        };
+
+        PlayFabClientAPI.GetLeaderboard(request,
+            (result) =>
+            {  //랭킹 리스트 받아오기 성공
+                for (int ii = 0; ii < result.Leaderboard.Count; ii++)
+                {
+                    var curBoard = result.Leaderboard[ii];
+
+                    //등수 안에 내가 있다면 색 표시
+                    if (curBoard.PlayFabId == GlobalValue.g_Unique_ID)
+                    {
+                        m_ScoreText[ii].color = new Color(1, 0, 0);
+                        m_NickNameText[ii].color = new Color(1, 0, 0);
+                    }
+
+                    m_NickNameText[ii].text = curBoard.DisplayName;
+                    m_ScoreText[ii].text = curBoard.StatValue.ToString() + "Kill";
+                }
+
+            },
+            (error) =>
+            {  //랭킹 리스트 받아오기 실패
+                //Debug.Log(error.ErrorMessage);
+            }
+     );
+    }
+```
+
+</details>
+
+---
+* #04)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Manager/Sound_Mgr.cs)) 싱글턴 패턴을 이용한 사운드 매니저 구현
+
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+public class Sound_Mgr : G_Singleton<Sound_Mgr>
+{
+    protected override void Init() //Awake() 함수 대신 사용
+    {
+        base.Init(); //부모쪽에 있는 Init()함수 호출
+
+        LoadChildGameObj();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        //사운드 미리 로딩
+        AudioClip a_GAudioClip = null;
+        object[] temp = Resources.LoadAll("Sounds"); //LoadAll : "Sounds" 폴더안의 파일들을 전부 로딩한다.
+        for (int ii = 0; ii < temp.Length; ii++)
+        {
+            a_GAudioClip = temp[ii] as AudioClip;
+
+            if (m_ADClipList.ContainsKey(a_GAudioClip.name) == true)
+                continue;
+
+            m_ADClipList.Add(a_GAudioClip.name, a_GAudioClip);
+        }
+    }
+
+    public void LoadChildGameObj()
+    {
+        m_AudioSrc = this.gameObject.AddComponent<AudioSource>();
+
+        //--- 게임 효과음 플레이를 위한 10개의 레이어 생성 코드
+        for (int ii = 0; ii < m_EffSdCount; ii++)
+        {
+            GameObject newSoundObj = new GameObject();
+            newSoundObj.transform.SetParent(this.transform);
+            newSoundObj.transform.localPosition = Vector3.zero;
+            AudioSource a_AudioSrc = newSoundObj.AddComponent<AudioSource>();
+            a_AudioSrc.playOnAwake = false;
+            a_AudioSrc.loop = false;
+            newSoundObj.name = "SoundEffObj";
+
+            m_SndSrcList[ii] = a_AudioSrc;
+            m_SndObjList.Add(newSoundObj);
+        }
+        //--- 게임 효과음 플레이를 위한 5개의 레이어 생성 코드
+    }
+}
+```
+
+</details>
+
+---
+* #05)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Box/ConfigBox.cs)) 사운드 환경설정 함수 구현(toggle을 통한 On,Off 및 Slider를 통한 사운드 크기 조절)
+
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+    public void SoundOnOff(bool a_OnOff = true) //BGM과 EFF 사운드 OnOff 조절해주는 함수
+    {
+        bool a_MuteOnOff = !a_OnOff;
+
+        if (m_AudioSrc != null)
+        {
+            m_AudioSrc.mute = a_MuteOnOff; //mute == true 끄기 mute == false 켜기
+            if (a_MuteOnOff == false)
+                m_AudioSrc.time = 0;      //처음부터 다시 플레이
+        }
+
+        for (int ii = 0; ii < m_EffSdCount; ii++)
+        {
+            if (m_SndSrcList[ii] != null)
+            {
+                m_SndSrcList[ii].mute = a_MuteOnOff;
+
+                if (a_MuteOnOff == false)
+                    m_SndSrcList[ii].time = 0;
+            }
+        }
+
+        m_SoundOnOff = a_OnOff;
+    }
+
+    //배경음은 지금 볼륨을 가져온 후에 플레이 해 준다.
+    public void EffSoundVolume(float fVolume) //EFF 사운드 볼륨 조절해주는 함수
+    {
+        for (int ii = 0; ii < m_EffSdCount; ii++)
+        {
+            if (m_SndSrcList[ii] != null)
+                m_SndSrcList[ii].volume = m_EffVolume[ii] * fVolume;
+        }
+
+        m_EffSoundVolume = fVolume;
+    }
+
+    public void BGMSoundVolume(float fVolume) //BGM 사운드 볼륨 조절해주는 함수
+    {
+        if (m_AudioSrc != null)
+            m_AudioSrc.volume = m_bgmVolume * fVolume;
+
+        m_BGMSoundVolume = fVolume;
+    }
+```
+
+</details>
+
+---
+* #06)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Other/ArrowCtrl.cs)) 포물선 운동하여 타겟 오브젝트로 움직이는 함수 구현
+
+<details>
+<summary>소스 코드</summary>
+  
+```csharp
+    public IEnumerator MoveToTarget(Monster a_TargetMonster) //타겟으로 설정된 몬스터를 향해 이동
+    {
+        if (a_TargetMonster != null)
+        {
+            float a_Duration = m_MvSpeed;
+            float a_Time = 0.0f;
+            Vector3 a_StartPos = m_StartPos.position;
+            Vector3 a_EndPos = a_TargetMonster.GetComponent<Transform>().position;
+
+            while (a_Time < a_Duration)
+            {
+                Vector3 a_OldPos = transform.position;
+
+                a_Time += Time.deltaTime;
+                float a_LinearT = a_Time / a_Duration;
+                float a_HeightT = m_Curve.Evaluate(a_LinearT);
+
+                float a_Height = Mathf.Lerp(0.0f, 8.0f, a_HeightT); //화살이 타겟위치로 선형보간
+
+                Vector3 a_CacPos = Vector2.Lerp(a_StartPos, a_EndPos, a_LinearT) + new Vector2(0.0f, a_Height); //커브에 선형보간한 값을 더함
+                transform.position = a_CacPos;
+
+                //화살 회전
+                m_CurDir = transform.position - a_OldPos;
+                m_CurDir.z = 0.0f;
+                m_CurDir.Normalize();
+
+                float a_Angle = Mathf.Atan2(m_CurDir.y, m_CurDir.x) * Mathf.Rad2Deg;
+                Quaternion a_Rot = Quaternion.AngleAxis(a_Angle - 90.0f, Vector3.forward);
+                transform.rotation = a_Rot;
+                //화살 회전
+
+                yield return null;
+            }
+
+            //화살 목표지점에 도착 시(몬스터에 화살이 맞았을때)
+            Destroy(gameObject); //화살 제거
+
+            if (a_TargetMonster != null)
+                a_TargetMonster.TakeDamage(m_Damgae); //데미지
+            //화살 목표지점에 도착 시(몬스터에 화살이 맞았을때)
+        }
+    }
+```
+
+</details>
