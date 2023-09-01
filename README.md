@@ -54,7 +54,7 @@ Easy와 Hard모드를 모두 클리어한 후 Hell모드에서 무한하게 쏟�
 * #01)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Manager/Fade_Mgr.cs)) Scene이동 시 Panel 오브젝트의 알파값을 조절하여 Fade In,Out 효과를 주는 함수 구현
 
 <details>
-<summary>소스 코드</summary>
+<summary>소스 코드 및 이미지</summary>
   
 ```csharp
     void FadeUpdate()
@@ -88,6 +88,7 @@ Easy와 Hard모드를 모두 클리어한 후 Hell모드에서 무한하게 쏟�
         }//if(m_CacTime < 1.0f)
     }//void FadeUpdate()
 ```
+![Fade In,Out](https://github.com/YboSim/Rogue_Defense_Unity2D/assets/142956423/19098649-fe70-4430-a987-7098b33f2dd5)
 
 </details>
 
@@ -299,7 +300,7 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
 * #06)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Other/ArrowCtrl.cs)) 포물선 운동하여 타겟 오브젝트로 움직이는 함수 구현
 
 <details>
-<summary>소스 코드</summary>
+<summary>소스 코드 및 이미지</summary>
   
 ```csharp
     public IEnumerator MoveToTarget(Monster a_TargetMonster) //타겟으로 설정된 몬스터를 향해 이동
@@ -346,12 +347,13 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
         }
     }
 ```
+![arc](https://github.com/YboSim/Rogue_Defense_Unity2D/assets/142956423/fe868927-92ac-4961-a39c-80a3ab3ee0b5)
 
 </details>
 
 ---
 
-* #07)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Manager/TowerInstallMgr.cs)) ScreenToWorldPoint함수를 이용한 타워 설치 가능Position 체크 및 타워 설치(드래그 앤 드랍)
+* #07)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Manager/TowerInstallMgr.cs)) ScreenToWorldPoint함수를 이용한 타워 설치 가능Position 체크 및 타워 설치
 <details>
 <summary>소스 코드</summary>
   
@@ -385,14 +387,15 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
         return false;
     }
 ```
+![TowerInstall](https://github.com/YboSim/Rogue_Defense_Unity2D/assets/142956423/36594221-2dd0-43fe-b161-61d15eeea2f4)
 
 </details>
 
 ---
-* #08)([Script](https://github.com/dkckacka1/DotHeros-2DPortfolio-/blob/main/Portfolio_2D/Assets/02.%20Script/Battle/Unit/SkillSystem/BattleTargetSetExtensions.cs)) Bzier Path Creator 에셋을 이용한 Rogue경로 설정 및 이
+* #08)([Script](https://github.com/dkckacka1/DotHeros-2DPortfolio-/blob/main/Portfolio_2D/Assets/02.%20Script/Battle/Unit/SkillSystem/BattleTargetSetExtensions.cs)) Bzier Path Creator 에셋을 이용한 Rogue경로 설정 및 이동
 
 <details>
-<summary>소스 코드</summary>
+<summary>소스 코드 및 이미지</summary>
   
 ```csharp
        if (pathCreator != null)
@@ -402,6 +405,7 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
             //transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
         }
 ```
+![pathcreator](https://github.com/YboSim/Rogue_Defense_Unity2D/assets/142956423/9953b17d-86c6-4fc1-9c6d-b35fcd8a1f90)
 
 </details>
 
@@ -411,8 +415,8 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
 
 <details>
 <summary>이미지</summary>
-  
 
+![BackgroundVideo](https://github.com/YboSim/Rogue_Defense_Unity2D/assets/142956423/a5b447cb-d5c7-4373-8566-015230ee50b8)
 
 </details>
 
@@ -456,6 +460,7 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
         //아이스타워 이펙트 
     }
 ```
+![IceTowerParticle](https://github.com/YboSim/Rogue_Defense_Unity2D/assets/142956423/a8a283ab-20e9-4cb9-b54d-ae9a504711c2)
 
 </details>
 
@@ -594,7 +599,7 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
 * #14)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Monster/Monster.cs)) Animator컴포넌트를 이용한 AnimatorUpdate함수 구현
 
 <details>
-<summary>소스 코드</summary>
+<summary>소스 코드 및 이미지</summary>
   
 ```csharp
     void AnimationUpdate()
@@ -618,6 +623,7 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
         }
     }
 ```
+![Animator](https://github.com/YboSim/Rogue_Defense_Unity2D/assets/142956423/ce85b7f3-f065-43d3-9177-8f06dd9c59f0)
 
 </details>
 
@@ -626,6 +632,9 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
 
 <details>
 <summary>이미지</summary>
+
+![Upgrade,Sell Btn](https://github.com/YboSim/Rogue_Defense_Unity2D/assets/142956423/ad803fb6-52b9-4b8d-8a53-38ef86c8fa81)
+
 
 </details>
 
@@ -636,6 +645,8 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
 <details>
 <summary>이미지</summary>
   
+![YSorting](https://github.com/YboSim/Rogue_Defense_Unity2D/assets/142956423/22bb3237-d69f-4fe1-a18b-298dcbdbfac3)
+
 
 </details>
 
