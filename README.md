@@ -421,7 +421,7 @@ public class Sound_Mgr : G_Singleton<Sound_Mgr>
 </details>
 
 ---
-* #10)([스크립트](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Tower/Tower_Ice.cs)) Particle System 컴포넌트를 이용한 IceTower 발동 효과 구현
+* #10)([Script](https://github.com/YboSim/Rogue_Defense_Unity2D/blob/main/Rogue_Defense/Assets/05.Scipts/Tower/Tower_Ice.cs)) Particle System 컴포넌트를 이용한 IceTower 발동 효과 구현
 
 <details>
 <summary>소스 코드 및 이미지</summary>
