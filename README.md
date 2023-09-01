@@ -21,8 +21,8 @@
 
 ## 빌드 파일 및 유튜브 영상
 - [유튜브 포트폴리오 소개 영상](https://youtu.be/Lmg4tjypV30)
-- 구글 드라이브 다운로드 링크(빌드)
-- 구글 드라이브 다운로드 링크(유니티)
+- [구글 드라이브 다운로드 링크(빌드)](https://drive.google.com/file/d/1e4p2pDpREwhdwnA6wSUrbm2d9cNsUlfz/view?usp=sharing)
+- [구글 드라이브 다운로드 링크(유니티)](https://drive.google.com/file/d/1clCtcs8AM1Fgu20GF0RfrTu1BqtNO2OE/view?usp=sharing)
 - 네이버 MyBox 다운로드 링크(빌드)
 - 네이버 MyBox 다운로드 링크(유니티)
   
